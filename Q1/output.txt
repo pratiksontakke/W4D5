@@ -1,0 +1,261 @@
+Loading AG News dataset...
+
+Note: Training with available categories from AG News dataset:
+- Politics (mapped from World news)
+- Sports
+- Finance (mapped from Business)
+- Tech (mapped from Sci/Tech)
+
+Categories 'Healthcare' and 'Entertainment' will be added later with additional data.
+
+Sampling training data:
+- Politics: 25 samples
+- Sports: 25 samples
+- Finance: 25 samples
+- Tech: 25 samples
+
+Verifying category distribution:
+- Politics: 25 samples
+- Tech: 25 samples
+- Sports: 25 samples
+- Finance: 25 samples
+
+Training classifier...
+Generating OpenAI embeddings...
+Training classifier...
+
+Training Metrics:
+
+Tech:
+Precision: 0.960
+Recall: 0.960
+F1-score: 0.960
+Support: 25.0
+
+Finance:
+Precision: 0.958
+Recall: 0.920
+F1-score: 0.939
+Support: 25.0
+
+Healthcare:
+No training data available yet
+
+Sports:
+Precision: 1.000
+Recall: 1.000
+F1-score: 1.000
+Support: 25.0
+
+Politics:
+Precision: 0.923
+Recall: 0.960
+F1-score: 0.941
+Support: 25.0
+
+Entertainment:
+No training data available yet
+
+Making predictions on test texts...
+
+Text: Apple announces new iPhone with revolutionary AI capabilities
+Predicted Category: Tech
+Confidence: 0.397
+Probabilities:
+  Tech: 0.397
+  Finance: 0.221
+  Sports: 0.193
+  Politics: 0.189
+
+Text: Manchester United wins dramatic match against Liverpool
+Predicted Category: Sports
+Confidence: 0.383
+Probabilities:
+  Sports: 0.383
+  Politics: 0.218
+  Tech: 0.213
+  Finance: 0.186
+
+Text: New healthcare bill passes in Senate with bipartisan support
+Predicted Category: Tech
+Confidence: 0.281
+Probabilities:
+  Tech: 0.281
+  Finance: 0.271
+  Politics: 0.238
+  Sports: 0.210
+
+Text: Stock market reaches all-time high as tech sector surges
+Predicted Category: Finance
+Confidence: 0.330
+Probabilities:
+  Finance: 0.330
+  Tech: 0.288
+  Sports: 0.203
+  Politics: 0.180
+Loading AG News dataset...
+
+Note: Training with available categories from AG News dataset:
+- Politics (mapped from World news)
+- Sports
+- Finance (mapped from Business)
+- Tech (mapped from Sci/Tech)
+
+Categories 'Healthcare' and 'Entertainment' will be added later with additional data.
+
+Training classifier...
+Generating Sentence-BERT embeddings...
+Training classifier...
+
+Training Metrics:
+
+Tech:
+Precision: 0.889
+Recall: 0.970
+F1-score: 0.928
+Support: 472.0
+
+Finance:
+Precision: 0.879
+Recall: 0.753
+F1-score: 0.811
+Support: 174.0
+
+Healthcare:
+No training data available yet
+
+Sports:
+Precision: 0.906
+Recall: 0.951
+F1-score: 0.928
+Support: 142.0
+
+Politics:
+Precision: 0.936
+Recall: 0.825
+F1-score: 0.877
+Support: 212.0
+
+Entertainment:
+No training data available yet
+
+Making predictions on test texts...
+
+Text: Apple announces new iPhone with revolutionary AI capabilities
+Predicted Category: Tech
+Confidence: 0.905
+Probabilities:
+  Tech: 0.905
+  Politics: 0.043
+  Finance: 0.038
+  Sports: 0.014
+
+Text: Manchester United wins dramatic match against Liverpool
+Predicted Category: Sports
+Confidence: 0.533
+Probabilities:
+  Sports: 0.533
+  Politics: 0.239
+  Tech: 0.132
+  Finance: 0.095
+
+Text: New healthcare bill passes in Senate with bipartisan support
+Predicted Category: Tech
+Confidence: 0.550
+Probabilities:
+  Tech: 0.550
+  Politics: 0.328
+  Finance: 0.084
+  Sports: 0.039
+
+Text: Stock market reaches all-time high as tech sector surges
+Predicted Category: Finance
+Confidence: 0.852
+Probabilities:
+  Finance: 0.852
+  Tech: 0.136
+  Politics: 0.009
+  Sports: 0.004
+Loading AG News dataset...
+
+Note: Training with available categories from AG News dataset:
+- Politics (mapped from World news)
+- Sports
+- Finance (mapped from Business)
+- Tech (mapped from Sci/Tech)
+
+Categories 'Healthcare' and 'Entertainment' will be added later with additional data.
+
+Training classifier...
+Generating Word2Vec embeddings...
+Training classifier...
+
+Training Metrics:
+
+Tech:
+Precision: 0.877
+Recall: 0.941
+F1-score: 0.908
+Support: 472.0
+
+Finance:
+Precision: 0.828
+Recall: 0.690
+F1-score: 0.752
+Support: 174.0
+
+Healthcare:
+No training data available yet
+
+Sports:
+Precision: 0.897
+Recall: 0.915
+F1-score: 0.906
+Support: 142.0
+
+Politics:
+Precision: 0.873
+Recall: 0.840
+F1-score: 0.856
+Support: 212.0
+
+Entertainment:
+No training data available yet
+
+Making predictions on test texts...
+
+Text: Apple announces new iPhone with revolutionary AI capabilities
+Predicted Category: Tech
+Confidence: 0.999
+Probabilities:
+  Tech: 0.999
+  Finance: 0.001
+  Politics: 0.000
+  Sports: 0.000
+
+Text: Manchester United wins dramatic match against Liverpool
+Predicted Category: Sports
+Confidence: 0.998
+Probabilities:
+  Sports: 0.998
+  Politics: 0.002
+  Finance: 0.000
+  Tech: 0.000
+
+Text: New healthcare bill passes in Senate with bipartisan support
+Predicted Category: Tech
+Confidence: 0.514
+Probabilities:
+  Tech: 0.514
+  Politics: 0.358
+  Finance: 0.116
+  Sports: 0.012
+
+Text: Stock market reaches all-time high as tech sector surges
+Predicted Category: Finance
+Confidence: 0.784
+Probabilities:
+  Finance: 0.784
+  Tech: 0.210
+  Politics: 0.004
+  Sports: 0.002
