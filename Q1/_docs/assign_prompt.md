@@ -133,7 +133,7 @@ Architectural Plan:
 Configuration File (`config.py`):
 ```python
 [PASTE THE CONTENT OF YOUR config.py FILE]
-```
+
 
 Your Task:
 Write the complete, production-ready Python code for the following file: [Specify the file path, e.g., core/embedders.py].
