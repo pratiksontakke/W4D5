@@ -1,39 +1,24 @@
-from sentence_bert_classifier import SentenceBertClassifier
-from datasets import load_dataset
-from tqdm import tqdm
+import joblib
+import numpy as np
+from core.data_loader import load_ag_news_data
+from core.embedders import SentenceBertEmbedder
+from core.classifier import UnifiedClassifier
+import config
 
 def main():
-    # Define our categories
-    categories = ['Tech', 'Finance', 'Healthcare', 'Sports', 'Politics', 'Entertainment']
+    # Set random seed for reproducibility
+    np.random.seed(config.RANDOM_SEED)
     
-    # Initialize classifier with specific model
-    classifier = SentenceBertClassifier(
-        categories=categories,
-        model_name='all-MiniLM-L6-v2'  # Using the specified model
+    # Load and prepare data
+    train_texts, train_labels, label_map = load_ag_news_data(
+        samples_per_category=config.SAMPLES_PER_CATEGORY,
+        seed=config.RANDOM_SEED
     )
     
-    # Load AG News dataset
-    print("Loading AG News dataset...")
-    dataset = load_dataset("ag_news")
-    
-    # Map AG News labels to our categories (simplified mapping for demonstration)
-    label_map = {
-        0: 'Politics',    # World news mapped to Politics
-        1: 'Sports',      # Sports
-        2: 'Finance',     # Business mapped to Finance
-        3: 'Tech'         # Sci/Tech mapped to Tech
-    }
-    
-    print("\nNote: Training with available categories from AG News dataset:")
-    print("- Politics (mapped from World news)")
-    print("- Sports")
-    print("- Finance (mapped from Business)")
-    print("- Tech (mapped from Sci/Tech)")
-    print("\nCategories 'Healthcare' and 'Entertainment' will be added later with additional data.")
-    
-    # Prepare training data (using a small subset for demonstration)
-    train_texts = dataset['train']['text'][:1000]  # Using first 1000 samples
-    train_labels = [label_map[label] for label in dataset['train']['label'][:1000]]
+    # Initialize Sentence-BERT embedder and classifier
+    print("\nInitializing Sentence-BERT embedder and classifier...")
+    embedder = SentenceBertEmbedder(model_name='all-MiniLM-L6-v2')  # Using specified model
+    classifier = UnifiedClassifier(embedder=embedder, categories=config.CATEGORIES)
     
     # Train the classifier
     print("\nTraining classifier...")
@@ -41,7 +26,7 @@ def main():
     
     # Print training metrics
     print("\nTraining Metrics:")
-    for category in categories:
+    for category in config.CATEGORIES:
         print(f"\n{category}:")
         if metrics[category]['support'] > 0:
             print(f"Precision: {metrics[category]['precision']:.3f}")
@@ -50,6 +35,11 @@ def main():
             print(f"Support: {metrics[category]['support']}")
         else:
             print("No training data available yet")
+    
+    # Save the trained model
+    model_path = config.MODELS_DIR / "sbert_classifier.joblib"
+    joblib.dump(classifier, model_path)
+    print(f"\nSaved model to {model_path}")
     
     # Example predictions
     test_texts = [

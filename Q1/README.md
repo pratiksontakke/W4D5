@@ -1,62 +1,123 @@
 # Smart Article Categorizer
 
-A sophisticated system that automatically classifies articles into different categories using multiple embedding approaches and machine learning techniques.
-
-## Overview
-
-This project implements an article classification system using four different embedding approaches:
-- Word2Vec/GloVe
-- Sentence-BERT (all-MiniLM-L6-v2)
-- OpenAI (text-embedding-ada-002)
-
-The system currently classifies articles into the following categories:
-- Tech
-- Finance
-- Sports
-- Politics
-
-Note: Healthcare and Entertainment categories will be added in future updates.
-
-## Performance Metrics
-
-### OpenAI Embeddings
-- Tech: Precision: 0.960, Recall: 0.960, F1-score: 0.960
-- Finance: Precision: 0.958, Recall: 0.920, F1-score: 0.939
-- Sports: Precision: 1.000, Recall: 1.000, F1-score: 1.000
-- Politics: Precision: 0.923, Recall: 0.960, F1-score: 0.941
-
-### Sentence-BERT Embeddings
-- Tech: Precision: 0.889, Recall: 0.970, F1-score: 0.928
-- Finance: Precision: 0.879, Recall: 0.753, F1-score: 0.811
-- Sports: Precision: 0.906, Recall: 0.951, F1-score: 0.928
-- Politics: Precision: 0.936, Recall: 0.825, F1-score: 0.877
-
-### Word2Vec Embeddings
-- Tech: Precision: 0.877, Recall: 0.941, F1-score: 0.908
-- Finance: Precision: 0.828, Recall: 0.690, F1-score: 0.752
-- Sports: Precision: 0.897, Recall: 0.915, F1-score: 0.906
-- Politics: Precision: 0.873, Recall: 0.840, F1-score: 0.856
+A sophisticated system that automatically classifies articles into different categories using multiple embedding approaches. This project demonstrates best practices for organizing machine learning code with a focus on modularity, extensibility, and clean architecture.
 
 ## Project Structure
 
 ```
-.
-├── openAI/
-│   ├── main.py
-│   └── openai_classifier.py
-├── sentenceBERT/
-│   ├── main.py
-│   └── sentence_bert_classifier.py
-├── word2Vec/
-│   ├── main.py
-│   └── word2vec_classifier.py
-├── requirements.txt
-└── README.md
+project_root/
+├── core/                   # Core components and business logic
+│   ├── __init__.py        # Exposes core components
+│   ├── embedders.py       # All embedding models in one place
+│   ├── classifier.py      # Unified classifier interface
+│   └── data_loader.py     # Data loading and preprocessing
+│
+├── pipelines/             # Training and evaluation pipelines
+│   ├── __init__.py        # Exposes pipeline entry points
+│   ├── train_and_evaluate.py  # Main training pipeline (OpenAI)
+│   ├── train_bert.py      # BERT-specific pipeline
+│   ├── train_sbert.py     # SentenceBERT-specific pipeline
+│   └── train_word2vec.py  # Word2Vec-specific pipeline
+│
+├── models/                # Saved model artifacts
+│   ├── openai_classifier.joblib
+│   ├── bert_classifier.joblib
+│   ├── sbert_classifier.joblib
+│   └── word2vec_classifier.joblib
+│
+├── plots/                 # Visualization outputs
+├── config.py             # Centralized configuration
+├── requirements.txt      # Project dependencies
+└── README.md            # Project documentation
 ```
 
-## Setup and Installation
+## Architecture Design Principles
 
-1. Create a virtual environment:
+### 1. Core Components (`core/`)
+- **Single Responsibility**: Each module has a clear, focused purpose
+- **Interface Segregation**: Base classes define clean interfaces
+- **Dependency Injection**: Components accept dependencies rather than creating them
+- **Open/Closed**: Easy to add new embedders without modifying existing code
+
+#### Key Files:
+- `embedders.py`: All embedding models inherit from base `Embedder` class
+- `classifier.py`: Unified classifier that works with any embedder
+- `data_loader.py`: Standardized data loading across all pipelines
+
+### 2. Training Pipelines (`pipelines/`)
+- **Separation of Concerns**: Training logic separate from model definitions
+- **Don't Repeat Yourself**: Common functionality shared via core components
+- **Configuration Isolation**: All settings in `config.py`
+- **Consistent Interface**: All pipelines follow same pattern
+
+### 3. Configuration (`config.py`)
+- **Single Source of Truth**: All configurable values in one place
+- **Environment Awareness**: Handles different environments (dev/prod)
+- **Path Management**: Centralizes file/directory path handling
+
+## Implementation Guide
+
+### 1. Adding a New Embedding Model
+
+1. Create new embedder class in `core/embedders.py`:
+```python
+class NewEmbedder(Embedder):
+    def __init__(self, **kwargs):
+        # Initialize your model
+        pass
+        
+    def get_embeddings(self, texts: List[str]) -> np.ndarray:
+        # Implement embedding logic
+        pass
+```
+
+2. Add to `core/__init__.py`:
+```python
+from .embedders import NewEmbedder
+__all__ += ['NewEmbedder']
+```
+
+3. Create training pipeline in `pipelines/train_new.py`:
+```python
+from core.embedders import NewEmbedder
+from core.classifier import UnifiedClassifier
+# ... implement training pipeline
+```
+
+### 2. Data Flow
+```mermaid
+graph TD
+    A[Input Text] --> B[Embedder]
+    B --> C[Embeddings]
+    C --> D[Unified Classifier]
+    D --> E[Category Prediction]
+```
+
+## Current Models
+
+1. **OpenAI Embeddings** (`text-embedding-ada-002`)
+   - High-quality embeddings
+   - Requires API key
+   - Best for production use
+
+2. **BERT** (`bert-base-uncased`)
+   - [CLS] token embeddings
+   - Local computation
+   - Good balance of quality/speed
+
+3. **Sentence-BERT** (`all-MiniLM-L6-v2`)
+   - Optimized for sentence embeddings
+   - Fast inference
+   - Good for semantic similarity
+
+4. **Word2Vec/GloVe**
+   - Lightweight
+   - Average word vectors
+   - Good baseline model
+
+## Setup and Usage
+
+1. Create virtual environment:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -67,72 +128,69 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-3. Set up OpenAI API key:
-Create a `.env` file and add your OpenAI API key:
-```
-OPENAI_API_KEY=your_api_key_here
-```
-
-## Usage
-
-Each embedding approach has its own module that can be run independently:
-
+3. Set up environment variables:
 ```bash
-# Run OpenAI embeddings classifier
-python openAI/main.py
-
-# Run Sentence-BERT classifier
-python sentenceBERT/main.py
-
-# Run Word2Vec classifier
-python word2Vec/main.py
+export OPENAI_API_KEY=your_api_key_here
 ```
 
-## Sample Predictions
+4. Run training pipelines:
+```bash
+# Train with OpenAI embeddings
+python -m pipelines.train_and_evaluate
 
-Here's how each model performs on sample texts:
+# Train with BERT
+python -m pipelines.train_bert
 
-### Text: "Apple announces new iPhone with revolutionary AI capabilities"
-- OpenAI: Tech (39.7% confidence)
-- Sentence-BERT: Tech (90.5% confidence)
-- Word2Vec: Tech (99.9% confidence)
+# Train with Sentence-BERT
+python -m pipelines.train_sbert
 
-### Text: "Manchester United wins dramatic match against Liverpool"
-- OpenAI: Sports (38.3% confidence)
-- Sentence-BERT: Sports (53.3% confidence)
-- Word2Vec: Sports (99.8% confidence)
+# Train with Word2Vec
+python -m pipelines.train_word2vec
+```
 
-### Text: "Stock market reaches all-time high as tech sector surges"
-- OpenAI: Finance (33.0% confidence)
-- Sentence-BERT: Finance (85.2% confidence)
-- Word2Vec: Finance (78.4% confidence)
+## Best Practices for Similar Projects
 
-## Model Comparison
+1. **Start with Architecture**:
+   - Define interfaces first
+   - Plan for extensibility
+   - Consider future maintenance
 
-- **Word2Vec**: Shows high confidence in predictions but slightly lower F1-scores. Best for clear-cut categories.
-- **Sentence-BERT**: Provides balanced performance with good F1-scores and reasonable confidence levels.
-- **OpenAI**: Achieves the highest F1-scores but shows more conservative confidence levels.
+2. **Organize by Function**:
+   - Group by responsibility, not technology
+   - Keep related code together
+   - Make dependencies explicit
 
-## Dataset
+3. **Configuration Management**:
+   - Centralize configuration
+   - Use environment variables
+   - Make paths relative to project root
 
-The project uses the AG News dataset with the following category mappings:
-- World news → Politics
-- Business → Finance
-- Sci/Tech → Tech
-- Sports → Sports
+4. **Documentation**:
+   - Document architecture decisions
+   - Provide clear examples
+   - Include setup instructions
+
+5. **Testing** (TODO):
+   - Unit tests for core components
+   - Integration tests for pipelines
+   - Test configuration management
 
 ## Future Improvements
 
-1. Add support for Healthcare and Entertainment categories
-2. Implement ensemble methods to combine predictions
-3. Add a web UI for real-time classification
-4. Add visualization of embedding clusters
-5. Expand the training dataset for better coverage
+1. Add web interface for real-time classification
+2. Implement model ensembling
+3. Add visualization of embedding clusters
+4. Expand test coverage
+5. Add model versioning and experiment tracking
+6. Implement continuous evaluation pipeline
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## License
 
 MIT License
-
-## Contributing
-
-Feel free to open issues and pull requests for any improvements.

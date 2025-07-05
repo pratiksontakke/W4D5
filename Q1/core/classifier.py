@@ -2,18 +2,18 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 import numpy as np
 from typing import List, Dict, Any, Union
-from sentence_bert_embedder import SentenceBertEmbedder
+from .embedders import Embedder
 
-class SentenceBertClassifier:
-    def __init__(self, categories: List[str], model_name: str = 'all-MiniLM-L6-v2'):
+class UnifiedClassifier:
+    def __init__(self, embedder: Embedder, categories: List[str]):
         """
-        Initialize Sentence-BERT classifier
+        Initialize classifier with an embedder
         
         Args:
+            embedder: Instance of an Embedder class
             categories: List of category names for classification
-            model_name: Name of the Sentence-BERT model to use
         """
-        self.embedder = SentenceBertEmbedder(model_name)
+        self.embedder = embedder
         self.classifier = LogisticRegression(
             max_iter=1000,
             multi_class='multinomial'
@@ -32,7 +32,7 @@ class SentenceBertClassifier:
             Dictionary containing training metrics
         """
         # Get embeddings for all texts
-        print("Generating Sentence-BERT embeddings...")
+        print("Generating embeddings...")
         embeddings = self.embedder.get_embeddings(texts)
         
         # Train classifier
