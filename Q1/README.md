@@ -117,11 +117,28 @@ graph TD
 
 ## Setup and Usage
 
-1. Create virtual environment:
+You can set up the project using either Conda (recommended) or venv.
+
+### Option 1: Using Conda (Recommended)
+
+1. Create and activate Conda environment:
+```bash
+# Create environment in ./venv with Python 3.10
+conda create --prefix ./venv python=3.10
+
+# Activate the environment
+conda activate ./venv
+```
+
+### Option 2: Using venv
+
+1. Create and activate virtual environment:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
+
+### Common Steps (After Environment Setup)
 
 2. Install dependencies:
 ```bash
