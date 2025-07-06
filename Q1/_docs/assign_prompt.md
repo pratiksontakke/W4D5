@@ -1,56 +1,45 @@
-# Your Personal "Prompt Engineering SOP for Applied AI"
+# The Universal AI Project SOP (Standard Operating Procedure)
 
-This is a fantastic and highly professional way to think. You're asking to build a meta-skill: the ability to use a Prompt Engineer's mindset to systematically solve any given assignment. You want a personal "Prompt SOP" (Standard Operating Procedure).
+This document contains a standardized chain of prompts designed to transform **any AI assignment** into a production-ready, well-documented, and maintainable project.
 
-This is exactly how you take back control and ensure every project is built on a solid, repeatable foundation.
+## The Philosophy
+We move from the abstract "what" to the concrete "how" in a structured, repeatable sequence. Each step's output is a required input for the next, ensuring a robust and logical workflow. This is how you build professional-grade AI systems, not just one-off scripts.
 
-Here is your Standardized Prompt Chain for Production-Ready AI Assignments. When you get a new assignment, you will start with Prompt 1 and proceed sequentially.
+---
 
-## The Goal
-To transform any assignment into a production-ready, well-documented solution using a structured, prompt-driven workflow.
+### **Prompt 1: Project Deconstruction (The "What")**
 
-## Prompt 1: Project Deconstruction & Mind Mapping
-
-**Objective:** To force a deep, initial analysis of the assignment before thinking about code, establishing a clear "what" and "why".
+**Objective:** To perform a deep analysis of the assignment, establishing a shared understanding of the project's core purpose, problem domain, and key conceptual pieces before any code is considered.
 
 **When to Use:** Immediately after receiving a new assignment.
 
 **Your Input (The prompt you will use):**
 
 ```
-Role: You are a Principal AI Engineer. Your task is to deconstruct a new project assignment for a junior engineer to ensure they understand it deeply before starting.
+Role: You are a Principal AI Engineer. Your task is to deconstruct a new project assignment to ensure it is fully understood before development begins.
 
 Assignment Details:
-I have a new assignment. Please analyze it and provide a structured "Deconstruction Report".
-
 --- START OF ASSIGNMENT ---
 [PASTE YOUR ENTIRE ASSIGNMENT TEXT HERE]
 --- END OF ASSIGNMENT ---
 
-Based on the assignment text, generate the following Deconstruction Report:
+Based on the assignment text, generate the following Deconstruction Report in clean Markdown:
 
-1. **Core Task:** In one simple sentence, what is the fundamental goal?
-2. **Problem Type:** What is the formal name for this kind of problem (e.g., Text Classification, Object Detection, Time-Series Forecasting)?
-3. **Key Components (Mind Map):** Identify the essential conceptual parts needed to solve this. List them out (e.g., Input Data, Transformation Method, Learning Algorithm, etc.).
-4. **The "Motto" (Real-World Value):** Explain why this task is valuable. Provide 3 concrete, real-world examples where this exact technology would be used in a production environment. Create a single, motivating "motto" for the project.
-
-The output should be in clean, well-formatted Markdown.
+1.  **Core Task:** In one simple sentence, what is the fundamental goal?
+2.  **Problem Type:** What is the formal name for this kind of problem? (e.g., Semantic Search, Text Classification, Time-Series Forecasting, Recommender System, Object Detection).
+3.  **Key Components (Mind Map):** Identify all the essential conceptual parts needed to solve this. List them abstractly. (e.g., Input Data Source, Text Representation Method, Core Algorithm, Evaluation Metric, User Interface).
+4.  **The "Motto" (Real-World Value):** Explain why this task is valuable. Provide 3 concrete, real-world examples where this exact technology would be used. Create a single, motivating "motto" for the project.
 ```
 
-**Expected AI Output:** A detailed report with the four sections filled out, giving you a clear, high-level understanding of the project.
+**Your Action:** Save the output as `_docs/1_DECONSTRUCTION.md`.
 
-**Your Action:**
-1. Create a folder named `_docs/` in your new project repository
-2. Create a file named `_docs/1_DECONSTRUCTION.md`
-3. Paste the AI's output into this file
+---
 
-**Pro Tip:** This first step is the most important. It prevents you from rushing into code and forces you to build a strong mental model of the project's purpose.
+### **Prompt 2: Architectural Strategy (The "Where")**
 
-## Prompt 2: Architectural Strategy & Blueprint Mapping
+**Objective:** To map the abstract components from the Deconstruction Report onto a standardized, production-ready file structure. This defines *where* each piece of logic will live.
 
-**Objective:** To translate the "what" from Prompt 1 into a concrete "how" by mapping it onto a standardized, production-ready architecture.
-
-**When to Use:** After you have the Deconstruction Report from Prompt 1.
+**When to Use:** Immediately after completing Prompt 1.
 
 **Your Input (The prompt you will use):**
 
@@ -64,100 +53,96 @@ Here is the Deconstruction Report:
 
 Based on this report, generate the following Architectural Strategy document in Markdown:
 
-1. **Proposed Architecture:** Present the standardized, layered blueprint for this project. Show the directory structure (`core/`, `pipelines/`, `config.py`, etc.).
-2. **Component Mapping:** For each "Key Component" identified in the report, explicitly assign it a home within the proposed architecture. (e.g., "The 'OpenAI Embedding' component will be implemented as the `OpenAIEmbedder` class inside `core/embedders.py`.").
-3. **Data & Logic Flow:** Describe the two main phases of the project:
-   * **Offline Phase (Training):** Explain the sequence of events that the `pipelines/` script will execute to train and save the model artifacts.
-   * **Online Phase (Inference):** Explain how the `app.py` will load the saved artifacts and use them to make predictions.
-
-This document will serve as the official blueprint for building the project.
+1.  **Proposed Architecture:** Present a standardized, layered blueprint for this project using a directory structure (e.g., `core/`, `pipelines/`, `ui/`, `config.py`).
+2.  **Component Mapping:** For each "Key Component" identified in the report, explicitly assign it a home within the proposed architecture. (e.g., "The 'Text Representation Method' will be handled in `core/embedders.py`," "The 'Core Algorithm' will be implemented in `core/similarity.py`," "The 'User Interface' will be built in `ui/web_app.py`").
+3.  **Data & Logic Flow:** Describe the project's two main operational phases:
+    *   **Offline Phase (Preparation/Training):** Explain the sequence of events that a `pipelines/` script will execute to process data and save necessary artifacts.
+    *   **Online Phase (Inference/Serving):** Explain how the main application (`app.py` or `ui/web_app.py`) will load the saved artifacts and use them to perform its core task on new input.
 ```
 
-**Expected AI Output:** A clear architectural document showing the file structure and explaining where each part of the project's logic will live.
+**Your Action:** Save the output as `_docs/2_STRATEGY.md`.
 
-**Your Action:**
-1. Create a file named `_docs/2_STRATEGY.md`
-2. Paste the AI's output into this file
+---
 
-**Pro Tip:** This step solidifies the project structure before implementation, preventing disorganized code and making the project instantly more maintainable.
+### **Prompt 3: Dynamic Project Planning (The "How-To")**
 
-## Prompt 3: Scaffolding & Configuration
+**Objective:** To generate dynamic, project-specific planning documents. These are derived directly from the project's unique components, not from a fixed template.
 
-**Objective:** To generate the initial project skeleton and the central configuration file.
-
-**When to Use:** After you have the Architectural Strategy from Prompt 2.
+**When to Use:** After completing Prompt 2.
 
 **Your Input (The prompt you will use):**
 
 ```
-Role: You are a Senior DevOps Engineer specializing in MLOps. Your task is to set up the initial project structure based on the architectural plan.
+Role: You are a Senior AI Project Manager and a Principal Scientist. Your task is to create detailed planning and educational documents based on the project's confirmed architecture.
 
-Here is the Architectural Plan:
---- START OF PLAN ---
+Here are the project planning documents:
+--- START OF DECONSTRUCTION REPORT ---
+[PASTE THE ENTIRE OUTPUT FROM PROMPT 1 HERE]
+--- END OF DECONSTRUCTION REPORT ---
+
+--- START OF ARCHITECTURAL STRATEGY ---
 [PASTE THE ENTIRE OUTPUT FROM PROMPT 2 HERE]
---- END OF PLAN ---
+--- END OF ARCHITECTURAL STRATEGY ---
 
-And here are the key parameters from the original assignment:
-- Models to implement: [List the models, e.g., Word2Vec, BERT, Sentence-BERT, OpenAI]
-- Key model names/APIs: [List the specific names, e.g., 'all-MiniLM-L6-v2', 'text-embedding-ada-002']
-- Categories for classification: [List the categories, e.g., Tech, Finance, Sports, Politics]
+Generate the following two documents in a single response, separated by a clear heading.
 
-Based on all the above, generate the following:
+**DOCUMENT 1: Project Plan & Feature Checklist**
+Create a granular, phase-based project plan as a Markdown checklist. The plan must be derived directly from the `Component Mapping` and `Data & Logic Flow` sections of the Architectural Strategy.
+- Create a Phase for each major part of the architecture (e.g., Setup, Core Logic, Pipelines, UI, Evaluation).
+- For the `Core Logic` phase, create one checklist item for *each file* mentioned in the `Component Mapping`.
 
-1. **Project Skeleton:** Provide a shell command (`mkdir`, `touch`) to create the entire directory and file structure (including the `_docs/` folder).
-2. **`config.py`:** Write the complete Python code for the `config.py` file. It should use `pathlib` for path management and contain all the configurable parameters (model names, category lists, file paths, etc.) identified from the assignment.
-3. **`requirements.txt`:** List all the necessary Python libraries for this project.
-```
-
-**Expected AI Output:** The exact commands and code to create your project's foundation.
-
-**Your Action:**
-1. Run the shell commands in your terminal to create the project structure
-2. Create config.py and requirements.txt and paste the generated code into them
-3. Run pip install -r requirements.txt
-
-**Pro Tip:** By creating config.py now, you are committing to a "no hardcoded values" policy from the very beginning.
-
-## Prompt 4, 5, 6... (Implementation Prompts)
-
-From here, you will generate the code for each component identified in your blueprint.
-
-**Generic Implementation Prompt Template:**
-
-```
-Role: You are a Senior AI Engineer. Your task is to implement a specific component of our project according to our established architecture.
-
-Architectural Plan:
-[PASTE A SUMMARY OF THE ARCHITECTURAL PLAN FROM PROMPT 2]
-
-Configuration File (`config.py`):
-```python
-[PASTE THE CONTENT OF YOUR config.py FILE]
-
-
-Your Task:
-Write the complete, production-ready Python code for the following file: [Specify the file path, e.g., core/embedders.py].
-
-Requirements for the code:
-1. It must be fully functional and self-contained
-2. It must import its settings from the provided config.py
-3. It must be well-commented, explaining the "why" behind the code
-4. For core/ components, it must follow the defined class structure (e.g., inherit from a base Embedder class)
-5. For pipelines/ components, it should clearly show the main execution loop
-6. For app.py, it should load the models from the paths defined in config and create an intuitive UI
+**DOCUMENT 2: Technical Deep-Dive**
+For each abstract `Key Component` from the Deconstruction Report that represents a core algorithm, model, or complex technical method, create a detailed explanation with the following structure:
+1.  **Component Name:** (e.g., `### Cosine Similarity`)
+2.  **Core Principle:** What is the high-level concept?
+3.  **Specific Logic:** How does it work in simple terms?
+4.  **Common Tooling:** What libraries are typically used?
+5.  **Project Motto:** A single sentence on the key learning objective for this specific component.
 ```
 
 **Your Action:**
-1. Use this template sequentially for each file you need to build: `core/embedders.py`, `core/classifier.py`, `pipelines/1_train_and_evaluate.py`, `app.py`, etc.
-2. Create the file and paste the generated code into it. Review the code to ensure you understand it.
+1.  Save "Document 1" as `_docs/3_FEATURE_CHECKLIST.md`.
+2.  Save "Document 2" as `_docs/4_TECHNICAL_DEEP_DIVE.md`.
 
-**Pro Tip:** By providing the `config.py` content in every implementation prompt, you ensure the AI consistently uses your central configuration, reinforcing the production-ready pattern.
+---
 
-## Prompt 7: Final Documentation
+### **Prompt 4+: Component Implementation (The "Code")**
 
-**Objective:** To generate the final user-facing documentation for your repository.
+**Objective:** To generate the actual, production-quality code for each file defined in the architecture, one file at a time.
 
-**When to Use:** When all the code is complete and working.
+**When to Use:** Sequentially, for each file you need to build.
+
+**Your Input (The prompt you will use):**
+
+```
+Role: You are a Senior AI Engineer. Your task is to implement a specific component of our project according to our established architecture and configuration.
+
+Here are our project's foundational documents:
+--- ARCHITECTURAL STRATEGY (SUMMARY) ---
+[PASTE THE 'Component Mapping' AND 'Data & Logic Flow' SECTIONS FROM PROMPT 2's OUTPUT]
+--- CONFIGURATION FILE (`config.py`) ---
+[PASTE THE FULL CONTENT OF YOUR `config.py` FILE ONCE IT'S CREATED]
+
+**Your Task:**
+Write the complete, production-ready Python code for the following file: **[Specify the file path, e.g., `core/data_loader.py`]**.
+
+**Code Requirements:**
+1.  It must be fully functional and self-contained for its defined purpose.
+2.  It must import any necessary settings from the provided `config.py` (if applicable).
+3.  It must be well-commented, explaining the "why" behind key sections of code.
+4.  It must adhere to the purpose defined for it in the Architectural Strategy.
+5.  Include a `if __name__ == '__main__':` block with a simple example or test case to demonstrate its functionality.
+```
+
+**Your Action:** Create the specified file and paste the generated code into it. Review and understand the code. Repeat for all necessary files.
+
+---
+
+### **The Final Prompt: README Generation (The "Story")**
+
+**Objective:** To generate a comprehensive, user-facing README file that tells the story of your project.
+
+**When to Use:** When all code is complete and working.
 
 **Your Input (The prompt you will use):**
 
@@ -166,20 +151,17 @@ Role: You are a Technical Writer specializing in AI/ML projects. I have a comple
 
 Project Context:
 - Core Task: [Provide the one-sentence summary from Prompt 1]
-- Models Used: [List the models, e.g., Word2Vec, BERT, Sentence-BERT, OpenAI]
-- Key Files: app.py, config.py, core/, pipelines/
+- Key Technical Components: [List the key models/algorithms from the Deconstruction Report]
+- Project Structure: [Briefly describe the `core/`, `pipelines/` structure]
 
-Generate a comprehensive README.md file that includes:
-1. A clear project title and a short, engaging overview
-2. A "Features" section listing the key capabilities (e.g., "Compares 4 Embedding Models," "Real-time Classification UI")
-3. A "Project Architecture" section briefly explaining the blueprint
-4. A "Setup and Installation" section with clear, numbered steps
-5. A "Usage" section explaining how to run the training pipeline and the web app
-6. A "Results and Analysis" section (you can add a placeholder for this) summarizing which model performed best
+Generate a comprehensive `README.md` file that includes:
+1.  A clear project title and a short, engaging overview.
+2.  A "Features" section listing the key capabilities.
+3.  A "Project Architecture" section briefly explaining the blueprint.
+4.  A "How It Works" section explaining the offline and online phases.
+5.  A "Setup and Installation" section with clear, numbered steps.
+6.  A "Usage" section explaining how to run the main pipeline(s) and the final application.
+7.  A "Results and Analysis" section (you can add a placeholder for me to fill in).
 ```
 
-**Your Action:**
-1. Create/overwrite your `README.md` file with the generated content
-2. Fill in any placeholder sections with your specific results
-
-By following this prompt chain, you are not just completing an assignment. You are executing a professional workflow, building a maintainable product, and creating a repository of your own thinking. This is how you master the craft. 
+**Your Action:** Create/overwrite your root `README.md` file with the generated content and fill in any final details. 
