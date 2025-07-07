@@ -1,0 +1,149 @@
+<form id="searchForm" class="search-form mb-4">
+    <div class="mb-3">
+        <div class="input-group input-group-lg">
+            <input type="text"
+                   class="form-control"
+                   id="searchQuery"
+                   name="query"
+                   placeholder="Enter your legal search query..."
+                   required>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Document Types:</label>
+        <div class="btn-group document-types" role="group">
+            {% for doc_type in document_types %}
+            <input type="checkbox"
+                   class="btn-check"
+                   id="{{ doc_type }}"
+                   name="document_types"
+                   value="{{ doc_type }}"
+                   autocomplete="off">
+            <label class="btn btn-outline-primary" for="{{ doc_type }}">
+                {{ doc_type|replace('_', ' ')|title }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="advanced-options collapse" id="advancedOptions">
+        <div class="card card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Date Range:</label>
+                        <div class="input-group">
+                            <input type="date" class="form-control" name="start_date">
+                            <span class="input-group-text">to</span>
+                            <input type="date" class="form-control" name="end_date">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Sort By:</label>
+                        <select class="form-select" name="sort_by">
+                            <option value="relevance">Relevance</option>
+                            <option value="date">Date</option>
+                            <option value="title">Title</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Results Per Method:</label>
+                        <input type="number"
+                               class="form-control"
+                               name="results_per_method"
+                               value="5"
+                               min="1"
+                               max="20">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Similarity Threshold:</label>
+                        <input type="range"
+                               class="form-range"
+                               name="similarity_threshold"
+                               min="0"
+                               max="100"
+                               value="70">
+                        <div class="d-flex justify-content-between">
+                            <small>Low</small>
+                            <small id="thresholdValue">70%</small>
+                            <small>High</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end">
+        <button class="btn btn-link"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#advancedOptions">
+            Advanced Options
+        </button>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('searchForm');
+        const thresholdInput = form.querySelector('input[name="similarity_threshold"]');
+        const thresholdValue = document.getElementById('thresholdValue');
+
+        // Update threshold value display
+        thresholdInput.addEventListener('input', (e) => {
+            thresholdValue.textContent = `${e.target.value}%`;
+        });
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const query = formData.get('query').trim();
+            const documentTypes = Array.from(formData.getAll('document_types'));
+
+            if (!query) {
+                showAlert('warning', 'Please enter a search query');
+                return;
+            }
+
+            if (documentTypes.length === 0) {
+                showAlert('warning', 'Please select at least one document type');
+                return;
+            }
+
+            // Collect advanced options
+            const advancedOptions = {
+                start_date: formData.get('start_date'),
+                end_date: formData.get('end_date'),
+                sort_by: formData.get('sort_by'),
+                results_per_method: formData.get('results_per_method'),
+                similarity_threshold: formData.get('similarity_threshold') / 100
+            };
+
+            // Trigger search event
+            const searchEvent = new CustomEvent('search:submitted', {
+                detail: {
+                    query,
+                    documentTypes,
+                    advancedOptions
+                }
+            });
+            document.dispatchEvent(searchEvent);
+        });
+    });
+</script>

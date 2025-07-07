@@ -1,0 +1,54 @@
+graph TB
+    subgraph "Frontend"
+        UI[Web UI]
+        Upload[Document Upload]
+        Query[Query Interface]
+        Results[Results Display]
+        Metrics[Metrics Dashboard]
+    end
+
+    subgraph "API Layer"
+        API[FastAPI Service]
+        Auth[Authentication]
+        Cache[Redis Cache]
+    end
+
+    subgraph "Core Services"
+        Preprocessor[Document Preprocessor]
+        Embedder[Text Embedder]
+        Similarity[Similarity Calculator]
+        Retrieval[Document Retrieval]
+    end
+
+    subgraph "Storage"
+        ES[Elasticsearch]
+        DB[PostgreSQL]
+        S3[Document Store]
+    end
+
+    subgraph "Infrastructure"
+        LB[Load Balancer]
+        Monitor[Prometheus + Grafana]
+        Alert[AlertManager]
+        Backup[Backup System]
+    end
+
+    UI --> LB
+    LB --> API
+    API --> Auth
+    API --> Cache
+    API --> Preprocessor
+    Preprocessor --> Embedder
+    Embedder --> Similarity
+    Similarity --> Retrieval
+    Retrieval --> ES
+    Retrieval --> DB
+    Upload --> S3
+    Monitor --> API
+    Monitor --> ES
+    Monitor --> DB
+    Monitor --> Cache
+    Alert --> Monitor
+    Backup --> DB
+    Backup --> ES
+    Backup --> S3

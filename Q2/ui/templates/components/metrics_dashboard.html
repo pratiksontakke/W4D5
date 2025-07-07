@@ -1,0 +1,99 @@
+<div class="metrics-dashboard">
+    <h3>Performance Metrics</h3>
+    <div class="row">
+        {% for method, data in metrics.items() %}
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ method|title }}</h5>
+                    <div class="metrics-list">
+                        <div class="metric-item">
+                            <span class="metric-label">Precision:</span>
+                            <span class="metric-value">{{ "%.2f"|format(data.precision) }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Recall:</span>
+                            <span class="metric-value">{{ "%.2f"|format(data.recall) }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Diversity:</span>
+                            <span class="metric-value">{{ "%.2f"|format(data.diversity) }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Response Time:</span>
+                            <span class="metric-value">{{ "%.0f"|format(data.response_time) }}ms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Performance Comparison</h5>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="metricsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize metrics chart
+    const ctx = document.getElementById('metricsChart').getContext('2d');
+    const methods = {{ metrics.keys()|list|tojson }};
+    const precisionData = methods.map(m => metrics[m].precision);
+    const recallData = methods.map(m => metrics[m].recall);
+    const diversityData = methods.map(m => metrics[m].diversity);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: methods,
+            datasets: [
+                {
+                    label: 'Precision',
+                    data: precisionData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Recall',
+                    data: recallData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Diversity',
+                    data: diversityData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 1
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>

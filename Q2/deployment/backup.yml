@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  backup-manager:
+    image: backup-manager:latest
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=us-east-1
+      - BACKUP_BUCKET=legal-search-backups
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=legal_search
+      - POSTGRES_USER=backup_user
+      - POSTGRES_PASSWORD=${BACKUP_PASSWORD}
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./backup-scripts:/backup-scripts
+      - ./backup-logs:/var/log/backups
+    command: ["python", "/backup-scripts/backup.py"]
+
+  backup-monitor:
+    image: prometheus/blackbox-exporter:latest
+    ports:
+      - "9115:9115"
+    volumes:
+      - ./backup-monitor.yml:/config/backup-monitor.yml
+    command:
+      - '--config.file=/config/backup-monitor.yml'
+
+volumes:
+  backup-logs:
+    driver: local
+
+configs:
+  backup-schedule:
+    file: ./backup-schedule.conf
+  backup-retention:
+    file: ./backup-retention.conf
+
+x-backup-schedule: &backup-schedule
+  database:
+    full: "0 0 * * *"  # Daily at midnight
+    incremental: "0 */6 * * *"  # Every 6 hours
+  elasticsearch:
+    snapshot: "0 2 * * *"  # Daily at 2 AM
+  documents:
+    sync: "0 4 * * *"  # Daily at 4 AM
+
+x-backup-retention: &backup-retention
+  database:
+    full: 30  # days
+    incremental: 7  # days
+  elasticsearch:
+    snapshot: 30  # days
+  documents:
+    versions: 10  # number of versions to keep

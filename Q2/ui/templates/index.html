@@ -1,0 +1,429 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Indian Legal Document Search{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-container {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .result-column {
+        background: white;
+        padding: 1rem;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .document-card {
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .relevance-badge {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .upload-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .upload-area:hover {
+        border-color: #0d6efd;
+        background: #f8f9fa;
+    }
+
+    .progress-container {
+        display: none;
+        margin-top: 1rem;
+    }
+
+    .metrics-dashboard {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Search and Upload Section -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="search-container">
+            <h2 class="mb-4">Legal Document Search</h2>
+            <form id="searchForm" class="mb-4">
+                <div class="mb-3">
+                    <input type="text" class="form-control form-control-lg"
+                           id="searchQuery" name="query"
+                           placeholder="Enter your legal search query...">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Document Types:</label>
+                    <div class="btn-group" role="group">
+                        <input type="checkbox" class="btn-check" id="income_tax" name="document_types" value="income_tax_act">
+                        <label class="btn btn-outline-primary" for="income_tax">Income Tax Act</label>
+
+                        <input type="checkbox" class="btn-check" id="gst" name="document_types" value="gst_act">
+                        <label class="btn btn-outline-primary" for="gst">GST Act</label>
+
+                        <input type="checkbox" class="btn-check" id="court" name="document_types" value="court_judgments">
+                        <label class="btn btn-outline-primary" for="court">Court Judgments</label>
+
+                        <input type="checkbox" class="btn-check" id="property" name="document_types" value="property_law">
+                        <label class="btn btn-outline-primary" for="property">Property Law</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="upload-container">
+            <h3 class="mb-3">Upload Documents</h3>
+            <div class="upload-area" id="dropZone">
+                <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                <p>Drag & drop files here or click to select</p>
+                <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.txt" style="display: none;">
+            </div>
+            <div class="progress-container">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+                <small class="text-muted" id="uploadStatus"></small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Section -->
+<div class="results-grid" id="searchResults" style="display: none;">
+    <!-- Cosine Similarity Results -->
+    <div class="result-column">
+        <h4>Cosine Similarity</h4>
+        <div class="results-container" id="cosineResults"></div>
+    </div>
+
+    <!-- Euclidean Distance Results -->
+    <div class="result-column">
+        <h4>Euclidean Distance</h4>
+        <div class="results-container" id="euclideanResults"></div>
+    </div>
+
+    <!-- MMR Results -->
+    <div class="result-column">
+        <h4>MMR</h4>
+        <div class="results-container" id="mmrResults"></div>
+    </div>
+
+    <!-- Hybrid Results -->
+    <div class="result-column">
+        <h4>Hybrid Similarity</h4>
+        <div class="results-container" id="hybridResults"></div>
+    </div>
+</div>
+
+<!-- Metrics Dashboard -->
+<div class="metrics-dashboard" id="metricsDashboard" style="display: none;">
+    <h3>Performance Metrics</h3>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Precision</h5>
+                    <canvas id="precisionChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Recall</h5>
+                    <canvas id="recallChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Diversity Score</h5>
+                    <canvas id="diversityChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Response Time</h5>
+                    <canvas id="responseTimeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Document ready handler
+    $(document).ready(function() {
+        initializeUploadHandlers();
+        initializeSearchForm();
+        initializeCharts();
+    });
+
+    // Initialize file upload handlers
+    function initializeUploadHandlers() {
+        const dropZone = $('#dropZone');
+        const fileInput = $('#fileInput');
+
+        // Handle drag & drop
+        dropZone.on('dragover', function(e) {
+            e.preventDefault();
+            dropZone.addClass('bg-light');
+        });
+
+        dropZone.on('dragleave', function(e) {
+            e.preventDefault();
+            dropZone.removeClass('bg-light');
+        });
+
+        dropZone.on('drop', function(e) {
+            e.preventDefault();
+            dropZone.removeClass('bg-light');
+            const files = e.originalEvent.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        // Handle click upload
+        dropZone.on('click', function() {
+            fileInput.click();
+        });
+
+        fileInput.on('change', function() {
+            handleFiles(this.files);
+        });
+    }
+
+    // Handle file upload
+    function handleFiles(files) {
+        const progressContainer = $('.progress-container');
+        const progressBar = $('.progress-bar');
+        const uploadStatus = $('#uploadStatus');
+
+        progressContainer.show();
+
+        Array.from(files).forEach(file => {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            $.ajax({
+                url: '/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    const xhr = new XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function(e) {
+                        if (e.lengthComputable) {
+                            const percent = Math.round((e.loaded / e.total) * 100);
+                            progressBar.width(percent + '%');
+                            uploadStatus.text(`Uploading: ${percent}%`);
+                        }
+                    });
+                    return xhr;
+                },
+                success: function(response) {
+                    showAlert('success', 'File uploaded successfully!');
+                    progressContainer.hide();
+                },
+                error: function(xhr) {
+                    showAlert('danger', 'Error uploading file: ' + xhr.responseJSON.detail);
+                    progressContainer.hide();
+                }
+            });
+        });
+    }
+
+    // Initialize search form
+    function initializeSearchForm() {
+        $('#searchForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const query = $('#searchQuery').val();
+            const documentTypes = [];
+            $('input[name="document_types"]:checked').each(function() {
+                documentTypes.push($(this).val());
+            });
+
+            if (!query) {
+                showAlert('warning', 'Please enter a search query');
+                return;
+            }
+
+            if (documentTypes.length === 0) {
+                showAlert('warning', 'Please select at least one document type');
+                return;
+            }
+
+            performSearch(query, documentTypes);
+        });
+    }
+
+    // Perform search
+    function performSearch(query, documentTypes) {
+        $.ajax({
+            url: '/search',
+            type: 'POST',
+            data: {
+                query: query,
+                document_types: documentTypes
+            },
+            success: function(response) {
+                displayResults(response.results);
+                updateMetrics(response.metrics);
+                $('#searchResults, #metricsDashboard').show();
+            },
+            error: function(xhr) {
+                showAlert('danger', 'Error performing search: ' + xhr.responseJSON.detail);
+            }
+        });
+    }
+
+    // Display search results
+    function displayResults(results) {
+        const methods = ['cosine', 'euclidean', 'mmr', 'hybrid'];
+
+        methods.forEach(method => {
+            const container = $(`#${method}Results`);
+            container.empty();
+
+            results[method].forEach(doc => {
+                const card = $('<div>').addClass('document-card position-relative');
+                const badge = $('<span>').addClass('badge bg-primary relevance-badge')
+                    .text(`Score: ${doc.score.toFixed(2)}`);
+                const title = $('<h5>').addClass('card-title').text(doc.title);
+                const excerpt = $('<p>').addClass('card-text small').text(doc.excerpt);
+
+                card.append(badge, title, excerpt);
+                container.append(card);
+            });
+        });
+    }
+
+    // Initialize charts
+    function initializeCharts() {
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false
+        };
+
+        window.charts = {
+            precision: new Chart($('#precisionChart'), {
+                type: 'bar',
+                options: chartOptions
+            }),
+            recall: new Chart($('#recallChart'), {
+                type: 'bar',
+                options: chartOptions
+            }),
+            diversity: new Chart($('#diversityChart'), {
+                type: 'bar',
+                options: chartOptions
+            }),
+            responseTime: new Chart($('#responseTimeChart'), {
+                type: 'line',
+                options: chartOptions
+            })
+        };
+    }
+
+    // Update metrics charts
+    function updateMetrics(metrics) {
+        const methods = ['Cosine', 'Euclidean', 'MMR', 'Hybrid'];
+
+        // Update precision chart
+        window.charts.precision.data = {
+            labels: methods,
+            datasets: [{
+                label: 'Precision',
+                data: methods.map(m => metrics[m.toLowerCase()].precision),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)'
+            }]
+        };
+        window.charts.precision.update();
+
+        // Update recall chart
+        window.charts.recall.data = {
+            labels: methods,
+            datasets: [{
+                label: 'Recall',
+                data: methods.map(m => metrics[m.toLowerCase()].recall),
+                backgroundColor: 'rgba(255, 99, 132, 0.5)'
+            }]
+        };
+        window.charts.recall.update();
+
+        // Update diversity chart
+        window.charts.diversity.data = {
+            labels: methods,
+            datasets: [{
+                label: 'Diversity Score',
+                data: methods.map(m => metrics[m.toLowerCase()].diversity),
+                backgroundColor: 'rgba(75, 192, 192, 0.5)'
+            }]
+        };
+        window.charts.diversity.update();
+
+        // Update response time chart
+        window.charts.responseTime.data = {
+            labels: methods,
+            datasets: [{
+                label: 'Response Time (ms)',
+                data: methods.map(m => metrics[m.toLowerCase()].response_time),
+                borderColor: 'rgba(153, 102, 255, 1)',
+                fill: false
+            }]
+        };
+        window.charts.responseTime.update();
+    }
+
+    // Show alert
+    function showAlert(type, message) {
+        const alert = $('<div>').addClass(`alert alert-${type} alert-dismissible fade show`)
+            .html(`
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `);
+
+        $('#alertSystem').append(alert);
+        setTimeout(() => alert.alert('close'), 5000);
+    }
+</script>
+{% endblock %}

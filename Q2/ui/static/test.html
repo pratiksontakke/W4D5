@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Document Search - Test Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-theme="light">
+    <div class="container">
+        <h1>Indian Legal Document Search System</h1>
+
+        <!-- Search Form -->
+        <form id="search-form" class="search-form">
+            <input type="text" name="query" class="search-input" placeholder="Enter your legal query...">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <!-- Upload Area -->
+        <div id="upload-area" class="upload-area">
+            <p>Drag and drop legal documents here or click to browse</p>
+            <p class="text-secondary">Supported formats: PDF, DOC, DOCX, TXT</p>
+        </div>
+
+        <!-- Results Grid -->
+        <div class="grid grid-cols-4 results-grid">
+            <!-- Results will be populated by JavaScript -->
+        </div>
+
+        <!-- Metrics Dashboard -->
+        <div id="metrics-dashboard" class="metrics-dashboard">
+            <h2>Performance Metrics</h2>
+            <!-- Metrics will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

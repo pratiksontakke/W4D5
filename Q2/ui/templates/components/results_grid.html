@@ -1,0 +1,158 @@
+<div class="results-grid">
+    {% for method, docs in results.items() %}
+    <div class="result-column">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>{{ method|title }}</h4>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown">
+                    <i class="fas fa-sort"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" href="#"
+                           onclick="sortResults('{{ method }}', 'score', 'desc')">
+                            Sort by Score
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#"
+                           onclick="sortResults('{{ method }}', 'date', 'desc')">
+                            Sort by Date
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#"
+                           onclick="sortResults('{{ method }}', 'title', 'asc')">
+                            Sort by Title
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="results-container" id="{{ method }}Results">
+            {% if docs %}
+                {% for doc in docs %}
+                    {% include "components/document_card.html" %}
+                {% endfor %}
+
+                {% if docs|length >= 5 %}
+                <button class="btn btn-outline-primary btn-sm w-100 mt-3"
+                        onclick="loadMoreResults('{{ method }}')">
+                    Load More
+                </button>
+                {% endif %}
+            {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-search fa-2x mb-2"></i>
+                    <p>No results found</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Sort results
+    function sortResults(method, field, direction) {
+        const container = document.getElementById(`${method}Results`);
+        const cards = Array.from(container.getElementsByClassName('document-card'));
+
+        cards.sort((a, b) => {
+            let valueA, valueB;
+
+            switch (field) {
+                case 'score':
+                    valueA = parseFloat(a.querySelector('.relevance-badge').textContent.split(': ')[1]);
+                    valueB = parseFloat(b.querySelector('.relevance-badge').textContent.split(': ')[1]);
+                    break;
+                case 'date':
+                    valueA = new Date(a.dataset.date);
+                    valueB = new Date(b.dataset.date);
+                    break;
+                case 'title':
+                    valueA = a.querySelector('.card-title').textContent;
+                    valueB = b.querySelector('.card-title').textContent;
+                    break;
+            }
+
+            if (direction === 'asc') {
+                return valueA > valueB ? 1 : -1;
+            } else {
+                return valueA < valueB ? 1 : -1;
+            }
+        });
+
+        // Clear and re-append sorted cards
+        container.innerHTML = '';
+        cards.forEach(card => container.appendChild(card));
+    }
+
+    // Load more results
+    async function loadMoreResults(method) {
+        const container = document.getElementById(`${method}Results`);
+        const currentCount = container.getElementsByClassName('document-card').length;
+        const loadMoreBtn = container.querySelector('button');
+
+        try {
+            loadMoreBtn.disabled = true;
+            loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading...';
+
+            const response = await fetch(`/search/more`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getAuthToken()}`
+                },
+                body: JSON.stringify({
+                    method,
+                    offset: currentCount,
+                    limit: 5
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load more results');
+            }
+
+            const data = await response.json();
+
+            if (data.results.length > 0) {
+                // Append new results
+                data.results.forEach(doc => {
+                    const card = document.createElement('div');
+                    card.className = 'document-card position-relative';
+                    card.innerHTML = `
+                        <span class="badge bg-primary relevance-badge">
+                            Score: ${doc.score.toFixed(2)}
+                        </span>
+                        <h5 class="card-title">${doc.title}</h5>
+                        <p class="card-text small">${doc.excerpt}</p>
+                        <button class="btn btn-sm btn-outline-secondary"
+                                onclick="provideFeedback('${doc.id}')">
+                            Provide Feedback
+                        </button>
+                    `;
+                    container.insertBefore(card, loadMoreBtn);
+                });
+
+                // Remove load more button if no more results
+                if (data.results.length < 5) {
+                    loadMoreBtn.remove();
+                }
+            } else {
+                loadMoreBtn.remove();
+            }
+        } catch (error) {
+            showAlert('danger', error.message);
+        } finally {
+            if (loadMoreBtn) {
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.innerHTML = 'Load More';
+            }
+        }
+    }
+</script>

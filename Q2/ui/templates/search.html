@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .method-column {
+        border-right: 1px solid #dee2e6;
+    }
+    .method-column:last-child {
+        border-right: none;
+    }
+    .result-card {
+        transition: transform 0.2s;
+    }
+    .result-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .metrics-badge {
+        font-size: 0.8rem;
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-4">Document Search</h2>
+        <div class="card">
+            <div class="card-body">
+                <form id="searchForm" method="GET" class="mb-0">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <input type="text"
+                                   name="q"
+                                   class="form-control form-control-lg"
+                                   placeholder="Enter your legal query..."
+                                   value="{{ request.query_params.get('q', '') }}"
+                                   required>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <select name="doc_type" class="form-select">
+                                <option value="">All Document Types</option>
+                                <option value="income_tax_act">Income Tax Act</option>
+                                <option value="gst_act">GST Act</option>
+                                <option value="court_judgments">Court Judgments</option>
+                                <option value="property_law">Property Law</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="methods" value="cosine" checked>
+                                <label class="form-check-label">Cosine</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="methods" value="euclidean" checked>
+                                <label class="form-check-label">Euclidean</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="methods" value="mmr" checked>
+                                <label class="form-check-label">MMR</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="methods" value="hybrid" checked>
+                                <label class="form-check-label">Hybrid</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if results %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info">
+            Found {{ results|length }} results for "{{ query }}"
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for method, method_results in results.items() %}
+    <div class="col-md-3 method-column">
+        <h4 class="mb-3">{{ method|title }}</h4>
+        {% for result in method_results %}
+        <div class="card result-card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ result.title }}</h5>
+                <p class="card-text small">{{ result.snippet }}</p>
+                <div class="mb-2">
+                    <span class="badge bg-primary metrics-badge">
+                        Score: {{ "%.2f"|format(result.score) }}
+                    </span>
+                    {% if result.diversity_score %}
+                    <span class="badge bg-info metrics-badge">
+                        Diversity: {{ "%.2f"|format(result.diversity_score) }}
+                    </span>
+                    {% endif %}
+                </div>
+                <a href="/document/{{ result.doc_id }}" class="btn btn-sm btn-outline-primary">
+                    View Document
+                </a>
+            </div>
+            <div class="card-footer bg-light">
+                <small class="text-muted">
+                    {{ result.doc_type|replace('_', ' ')|title }}
+                </small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+
+{% elif request.query_params.get('q') %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-warning">
+            No results found for "{{ request.query_params.get('q') }}".
+            Try modifying your search terms or selecting different document types.
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Restore form state from URL parameters
+    const params = new URLSearchParams(window.location.search);
+
+    // Restore document type
+    const docType = params.get('doc_type');
+    if (docType) {
+        document.querySelector('select[name="doc_type"]').value = docType;
+    }
+
+    // Restore method checkboxes
+    const methods = params.getAll('methods');
+    if (methods.length > 0) {
+        document.querySelectorAll('input[name="methods"]').forEach(checkbox => {
+            checkbox.checked = methods.includes(checkbox.value);
+        });
+    }
+
+    // Handle form submission
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get selected methods
+        const selectedMethods = Array.from(
+            document.querySelectorAll('input[name="methods"]:checked')
+        ).map(cb => cb.value);
+
+        if (selectedMethods.length === 0) {
+            alert('Please select at least one search method.');
+            return;
+        }
+
+        // Build query string
+        const formData = new FormData(this);
+        const queryParams = new URLSearchParams();
+
+        for (const [key, value] of formData.entries()) {
+            if (key === 'methods') {
+                selectedMethods.forEach(method => queryParams.append('methods', method));
+            } else {
+                queryParams.append(key, value);
+            }
+        }
+
+        // Navigate to search results
+        window.location.href = `/search?${queryParams.toString()}`;
+    });
+});
+</script>
+{% endblock %}

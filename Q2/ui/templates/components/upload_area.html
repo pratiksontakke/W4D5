@@ -1,0 +1,137 @@
+<div class="upload-container">
+    <h3 class="mb-3">Upload Documents</h3>
+
+    <div class="upload-area" id="dropZone">
+        <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+        <p class="mb-2">Drag & drop files here or click to select</p>
+        <p class="small text-muted">
+            Allowed types: {{ ", ".join(allowed_types) }}<br>
+            Maximum size: {{ max_size_mb }}MB
+        </p>
+        <input type="file" id="fileInput" multiple
+               accept="{{ ",".join(allowed_types) }}"
+               style="display: none;">
+    </div>
+
+    <div class="progress-container mt-3" style="display: none;">
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+        </div>
+        <small class="text-muted" id="uploadStatus"></small>
+    </div>
+
+    <div id="uploadQueue" class="mt-3">
+        <!-- Upload queue items will be dynamically added here -->
+    </div>
+</div>
+
+<template id="queueItemTemplate">
+    <div class="queue-item d-flex align-items-center mb-2">
+        <i class="fas fa-file me-2"></i>
+        <span class="filename flex-grow-1"></span>
+        <span class="status badge"></span>
+        <button class="btn btn-sm btn-link text-danger remove-btn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</template>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadQueue = document.getElementById('uploadQueue');
+        const queueItemTemplate = document.getElementById('queueItemTemplate');
+
+        // Handle drag & drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // Handle click upload
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                // Validate file type
+                if (!isValidFileType(file)) {
+                    showAlert('danger', `Invalid file type: ${file.name}`);
+                    return;
+                }
+
+                // Validate file size
+                if (file.size > {{ max_size_mb }} * 1024 * 1024) {
+                    showAlert('danger', `File too large: ${file.name}`);
+                    return;
+                }
+
+                addToQueue(file);
+            });
+        }
+
+        function addToQueue(file) {
+            const queueItem = queueItemTemplate.content.cloneNode(true).querySelector('.queue-item');
+            queueItem.querySelector('.filename').textContent = file.name;
+            queueItem.querySelector('.status').textContent = 'Pending';
+            queueItem.querySelector('.status').classList.add('bg-secondary');
+
+            const removeBtn = queueItem.querySelector('.remove-btn');
+            removeBtn.addEventListener('click', () => queueItem.remove());
+
+            uploadQueue.appendChild(queueItem);
+            uploadFile(file, queueItem);
+        }
+
+        async function uploadFile(file, queueItem) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const statusBadge = queueItem.querySelector('.status');
+            statusBadge.textContent = 'Uploading...';
+            statusBadge.classList.remove('bg-secondary');
+            statusBadge.classList.add('bg-primary');
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+
+                statusBadge.textContent = 'Completed';
+                statusBadge.classList.remove('bg-primary');
+                statusBadge.classList.add('bg-success');
+
+                setTimeout(() => queueItem.remove(), 3000);
+            } catch (error) {
+                statusBadge.textContent = 'Failed';
+                statusBadge.classList.remove('bg-primary');
+                statusBadge.classList.add('bg-danger');
+                showAlert('danger', `Upload failed: ${error.message}`);
+            }
+        }
+
+        function isValidFileType(file) {
+            const allowedTypes = {{ allowed_types|tojson }};
+            return allowedTypes.some(type =>
+                file.name.toLowerCase().endsWith(type.toLowerCase())
+            );
+        }
+    });
+</script>

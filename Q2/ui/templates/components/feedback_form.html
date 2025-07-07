@@ -1,0 +1,121 @@
+<div class="feedback-form">
+    <form id="feedbackForm_{{ document_id }}" class="card">
+        <div class="card-body">
+            <h5 class="card-title">Provide Feedback</h5>
+
+            <div class="mb-3">
+                <label class="form-label">Is this result relevant?</label>
+                <div class="btn-group w-100" role="group">
+                    <input type="radio"
+                           class="btn-check"
+                           name="relevance"
+                           id="relevant_{{ document_id }}"
+                           value="relevant"
+                           autocomplete="off">
+                    <label class="btn btn-outline-success" for="relevant_{{ document_id }}">
+                        <i class="fas fa-thumbs-up"></i> Yes
+                    </label>
+
+                    <input type="radio"
+                           class="btn-check"
+                           name="relevance"
+                           id="not_relevant_{{ document_id }}"
+                           value="not_relevant"
+                           autocomplete="off">
+                    <label class="btn btn-outline-danger" for="not_relevant_{{ document_id }}">
+                        <i class="fas fa-thumbs-down"></i> No
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Relevance Score (optional)</label>
+                <input type="range"
+                       class="form-range"
+                       name="score"
+                       min="0"
+                       max="100"
+                       value="50">
+                <div class="d-flex justify-content-between">
+                    <small>Not Relevant</small>
+                    <small id="scoreValue_{{ document_id }}">50%</small>
+                    <small>Very Relevant</small>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Comments (optional)</label>
+                <textarea class="form-control"
+                          name="comments"
+                          rows="2"
+                          placeholder="Any additional feedback..."></textarea>
+            </div>
+
+            <input type="hidden" name="document_id" value="{{ document_id }}">
+            <input type="hidden" name="query_id" value="{{ query_id }}">
+
+            <div class="d-flex justify-content-end">
+                <button type="button"
+                        class="btn btn-link me-2"
+                        onclick="closeFeedbackForm('{{ document_id }}')">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    Submit Feedback
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById(`feedbackForm_{{ document_id }}`);
+        const scoreInput = form.querySelector('input[name="score"]');
+        const scoreValue = document.getElementById(`scoreValue_{{ document_id }}`);
+
+        // Update score value display
+        scoreInput.addEventListener('input', (e) => {
+            scoreValue.textContent = `${e.target.value}%`;
+        });
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const feedback = {
+                document_id: formData.get('document_id'),
+                query_id: formData.get('query_id'),
+                relevance: formData.get('relevance'),
+                score: parseInt(formData.get('score')) / 100,
+                comments: formData.get('comments')
+            };
+
+            try {
+                const response = await fetch('/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify(feedback)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to submit feedback');
+                }
+
+                showAlert('success', 'Thank you for your feedback!');
+                closeFeedbackForm('{{ document_id }}');
+            } catch (error) {
+                showAlert('danger', error.message);
+            }
+        });
+    });
+
+    function closeFeedbackForm(documentId) {
+        const form = document.getElementById(`feedbackForm_${documentId}`);
+        form.closest('.feedback-form').remove();
+    }
+</script>
