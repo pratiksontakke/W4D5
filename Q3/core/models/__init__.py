@@ -2,7 +2,7 @@
 Core model implementations for contrastive learning and classification.
 """
 
-from .contrastive import ContrastiveTrainer
 from .classifier import ConversionClassifier
+from .contrastive import ContrastiveTrainer
 
-__all__ = ['ContrastiveTrainer', 'ConversionClassifier'] 
+__all__ = ["ContrastiveTrainer", "ConversionClassifier"]
