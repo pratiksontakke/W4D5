@@ -22,6 +22,10 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
+from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from tqdm import tqdm
+
 from config import (
     ARTIFACTS_DIR,
     EMBEDDING_MODELS,
@@ -33,9 +37,6 @@ from config import (
 from core.data_loader import DocumentLoader
 from core.embedders import EmbeddingGenerator
 from core.preprocess import TextPreprocessor
-from sentence_transformers import SentenceTransformer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from tqdm import tqdm
 
 # Configure logging
 logging.basicConfig(

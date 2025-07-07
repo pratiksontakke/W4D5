@@ -21,10 +21,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from config import EVALUATION_CONFIG, SIMILARITY_METHODS
-from core.retrieval import SearchResult
 from scipy import stats
 from sklearn.metrics import average_precision_score, precision_recall_curve
+
+from config import EVALUATION_CONFIG, SIMILARITY_METHODS
+from core.retrieval import SearchResult
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

@@ -3,6 +3,8 @@ import unittest
 from unittest.mock import Mock, patch
 
 import numpy as np
+from sentence_transformers import SentenceTransformer
+
 from core.data_loader import DocumentLoader
 from core.embedders import TextEmbedder
 from core.preprocess import TextPreprocessor
@@ -13,6 +15,5 @@ from core.similarity import (
     HybridSimilarity,
     MaximalMarginalRelevance,
 )
-from sentence_transformers import SentenceTransformer
 
 # ... rest of the file ...

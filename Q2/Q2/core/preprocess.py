@@ -5,8 +5,9 @@ import logging
 from typing import Dict, List
 
 import spacy
-from config import PROCESSING_CONFIG
 from spacy.language import Language
+
+from config import PROCESSING_CONFIG
 
 logger = logging.getLogger(__name__)
 

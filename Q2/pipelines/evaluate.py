@@ -21,6 +21,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from scipy import stats
+from sklearn.metrics import precision_recall_curve
+from tqdm import tqdm
+
 from config import (
     ARTIFACTS_DIR,
     DATA_DIR,
@@ -41,9 +45,6 @@ from core.similarity import (
     HybridSimCalculator,
     MMRCalculator,
 )
-from scipy import stats
-from sklearn.metrics import precision_recall_curve
-from tqdm import tqdm
 
 # Configure logging
 logging.basicConfig(

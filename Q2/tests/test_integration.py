@@ -20,6 +20,8 @@ import numpy as np
 # Add project root to Python path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
+from fastapi.testclient import TestClient
+
 from config import (
     ARTIFACTS_DIR,
     EVALUATION_CONFIG,
@@ -40,7 +42,6 @@ from core.similarity import (
     HybridSimilarity,
     MaximalMarginalRelevance,
 )
-from fastapi.testclient import TestClient
 from pipelines.build_index import IndexBuilder
 from ui.web_app import app
 

@@ -8,9 +8,10 @@ import os
 from typing import Dict, List
 
 import pytest
+from fastapi.testclient import TestClient
+
 from config import EVALUATION_CONFIG
 from core.evaluation import evaluate_search_results
-from fastapi.testclient import TestClient
 from pipelines.build_index import build_search_index
 from pipelines.evaluate import run_evaluation
 from tests.test_config import TEST_DATA_DIR

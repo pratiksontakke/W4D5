@@ -7,9 +7,10 @@ import logging
 from typing import Dict, List
 
 import numpy as np
+from sklearn.metrics import precision_score, recall_score
+
 from config import EVALUATION_CONFIG
 from core.evaluation import calculate_diversity, calculate_precision, calculate_recall
-from sklearn.metrics import precision_score, recall_score
 
 logger = logging.getLogger(__name__)
 

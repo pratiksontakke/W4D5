@@ -5,6 +5,7 @@ Tests for the data_loader module.
 from pathlib import Path
 
 import pytest
+
 from core.data_loader import DocumentLoader
 
 

@@ -23,6 +23,9 @@ from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 from cachetools import TTLCache, cached
+from nltk.corpus import wordnet
+from sklearn.preprocessing import MinMaxScaler
+
 from config import (
     EVALUATION_CONFIG,
     LEGAL_DOCUMENT_TYPES,
@@ -31,8 +34,6 @@ from config import (
     UI_CONFIG,
 )
 from core.similarity import SimilarityResult
-from nltk.corpus import wordnet
-from sklearn.preprocessing import MinMaxScaler
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

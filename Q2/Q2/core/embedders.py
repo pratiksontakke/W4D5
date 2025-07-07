@@ -5,9 +5,10 @@ import logging
 from typing import Dict, List
 
 import numpy as np
-from config import EMBEDDING_MODELS
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+from config import EMBEDDING_MODELS
 
 logger = logging.getLogger(__name__)
 

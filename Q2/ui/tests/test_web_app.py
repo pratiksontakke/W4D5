@@ -9,8 +9,9 @@ from unittest.mock import Mock, patch
 
 import jwt
 import pytest
-from config import UI_CONFIG
 from fastapi.testclient import TestClient
+
+from config import UI_CONFIG
 from ui.web_app import app, check_rate_limit, get_current_user
 
 # Test client

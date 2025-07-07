@@ -12,15 +12,16 @@ from typing import Dict, List, Optional
 
 import jwt
 import uvicorn
-from config import LEGAL_DOCUMENT_TYPES, UI_CONFIG
-from core.data_loader import DocumentLoader
-from core.evaluation import MetricsCalculator
-from core.similarity import SimilarityEngine
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
+from config import LEGAL_DOCUMENT_TYPES, UI_CONFIG
+from core.data_loader import DocumentLoader
+from core.evaluation import MetricsCalculator
+from core.similarity import SimilarityEngine
 
 # Configure logging
 logging.basicConfig(

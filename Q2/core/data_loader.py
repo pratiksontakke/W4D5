@@ -20,9 +20,10 @@ from typing import Dict, List, Optional, Set, Tuple, Union
 
 import docx
 import PyPDF2
-from config import LEGAL_DOCUMENT_TYPES, PROCESSED_DATA_DIR, RAW_DATA_DIR, UI_CONFIG
 from pydantic import BaseModel, Field, validator
 from tqdm import tqdm
+
+from config import LEGAL_DOCUMENT_TYPES, PROCESSED_DATA_DIR, RAW_DATA_DIR, UI_CONFIG
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

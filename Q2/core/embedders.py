@@ -23,12 +23,13 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
-from config import EMBEDDING_MODELS, EMBEDDINGS_DIR, PROCESSING_CONFIG
 from sentence_transformers import SentenceTransformer
 from sklearn.decomposition import PCA, TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.manifold import TSNE
 from tqdm import tqdm
+
+from config import EMBEDDING_MODELS, EMBEDDINGS_DIR, PROCESSING_CONFIG
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

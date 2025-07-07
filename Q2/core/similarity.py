@@ -19,11 +19,12 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
-from config import SIMILARITY_METHODS
 from scipy.sparse import csr_matrix, vstack
 from scipy.spatial.distance import cdist
 from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
+
+from config import SIMILARITY_METHODS
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
