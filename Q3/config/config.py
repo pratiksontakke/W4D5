@@ -60,4 +60,4 @@ if __name__ == "__main__":
     # Simple test to verify config is loaded correctly
     print(f"Project root: {PROJECT_ROOT}")
     print(f"Data directory: {DATA_DIR}")
-    print(f"Model configuration: {MODEL_CONFIG}") 
+    print(f"Model configuration: {MODEL_CONFIG}")

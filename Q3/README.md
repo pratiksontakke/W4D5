@@ -28,7 +28,7 @@ This project addresses the challenge of accurately predicting customer conversio
 │   └── processing/   # Data processing utilities
 ├── monitoring/       # Monitoring and logging
 ├── pipelines/        # Training and evaluation pipelines
-├── tests/           
+├── tests/
 │   ├── integration/  # Integration tests
 │   └── unit/        # Unit tests
 └── utils/            # Utility functions
